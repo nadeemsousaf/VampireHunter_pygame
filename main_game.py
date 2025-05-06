@@ -6,9 +6,8 @@ window = pygame.display.set_mode((800,500))
 pygame.display.set_caption('Vampire Hunter')
 clock = pygame.time.Clock()
 
-graveyard_top = pygame.image.load('images/graveyard_top.png')
-graveyard_bottom = pygame.image.load('images/graveyard_bottom.png')
 graveyard = pygame.image.load('images/graveyard6.jpg')
+grass = pygame.image.load('images/grass.png')
 font1 = pygame.font.Font('fonts/pixel.ttf', 50)
 text_surface = font1.render('Vampire Hunter', False, 'white')
 
@@ -19,7 +18,7 @@ class Player():
         self.left = left
         self.right = right
         self.x = 0
-        self.y = 120
+        self.y = 245
         self.x_dir = 0
         self.y_dir = 0
         self.speed = 10
@@ -39,8 +38,18 @@ class Button():
         window.blit(self.image, (self.x, self.y))
         pos = pygame.mouse.get_pos
 
-enemy_1 = Enemy(0, 120, pygame.image.load('images/enemy.png'))
-player = Player(pygame.image.load('images/player10.png'), pygame.image.load('images/player5.png'), pygame.image.load('images/player4.png'))
+enemy_1 = Enemy(0, 240, pygame.image.load('images/enemy1.png'))
+player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
+
+def ob_overlap(ob1, ob2):
+    ob1_x1 = ob1.x
+    ob1_x2 = ob1.x + ob1.show.get_width()
+    ob2_x1 = ob2.x
+    ob2_x2 = ob2.x + ob2.image.get_width()
+    if (ob1_x1 <= ob2_x1 and ob1_x2 >= ob2_x1) or (ob2_x1 <= ob1_x1 and ob2_x2 >= ob1_x2):
+        return True
+    else:
+        return False
 
 while True:
     for event in pygame.event.get():
@@ -70,8 +79,7 @@ while True:
                 player.x_dir = 0
 
     window.blit(graveyard, (0,0))
-    #window.blit(graveyard_top, (0,0))
-    #window.blit(graveyard_bottom, (0,150))
+    window.blit(grass, (0,70))
     window.blit(text_surface, (250,70))
     window.blit(enemy_1.image, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
@@ -81,5 +89,7 @@ while True:
     if enemy_1.x < 0:
         enemy_1.x = 800
 
+    if ob_overlap(player,enemy_1):
+        print("Overlap")
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(40)
