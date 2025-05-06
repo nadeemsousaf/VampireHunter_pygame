@@ -22,12 +22,19 @@ class Player():
         self.x_dir = 0
         self.y_dir = 0
         self.speed = 10
+    def attack(self):
+        possible_enemy = any_overlap(player,enemy_list)
+        if possible_enemy != False:
+            possible_enemy.vanquish()
 
 class Enemy():
     def __init__(self, x, y, image):
         self.x = x
         self.y = y
         self.image = image
+    def vanquish(self):
+        print("hit")
+        #self.x = self.x-30
 
 class Button():
     def __init__(self, x, y, image):
@@ -40,6 +47,7 @@ class Button():
 
 enemy_1 = Enemy(0, 240, pygame.image.load('images/enemy1.png'))
 player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
+enemy_list = [enemy_1]
 
 def ob_overlap(ob1, ob2):
     ob1_x1 = ob1.x
@@ -50,6 +58,16 @@ def ob_overlap(ob1, ob2):
         return True
     else:
         return False
+
+def any_overlap(person, list):
+    person_x1 = person.x
+    person_x2 = person.x + person.show.get_width()
+    for x in list:
+        enemy_x1 = x.x
+        enemy_x2 = x.x + x.image.get_width()
+        if (person_x1 <= enemy_x1 and person_x2 >= enemy_x1) or (enemy_x1 <= person_x1 and enemy_x2 >= person_x2):
+            return x
+    return False
 
 while True:
     for event in pygame.event.get():
@@ -68,6 +86,8 @@ while True:
             elif event.key == pygame.K_RIGHT:
                 player.x_dir = 1
                 player.show = player.right
+            elif event.key == pygame.K_SPACE:
+                player.attack()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
                 player.y_dir = 0
@@ -91,5 +111,12 @@ while True:
 
     if ob_overlap(player,enemy_1):
         print("Overlap")
+
+    if player.x+player.show.get_width() < 0:
+        player.x = 0+player.show.get_width()
+    
+    if player.x > 800:
+        player.x = 800-player.show.get_width()
+
     pygame.display.update()
     clock.tick(40)
