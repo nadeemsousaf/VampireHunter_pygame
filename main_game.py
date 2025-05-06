@@ -72,7 +72,7 @@ while True:
     window.blit(graveyard, (0,0))
     #window.blit(graveyard_top, (0,0))
     #window.blit(graveyard_bottom, (0,150))
-    #window.blit(text_surface, (250,250))
+    window.blit(text_surface, (250,70))
     window.blit(enemy_1.image, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
 
