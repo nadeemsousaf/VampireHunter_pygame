@@ -8,8 +8,9 @@ clock = pygame.time.Clock()
 
 graveyard = pygame.image.load('images/graveyard6.jpg')
 grass = pygame.image.load('images/grass.png')
-font1 = pygame.font.Font('fonts/pixel.ttf', 50)
-text_surface = font1.render('Vampire Hunter', False, 'white')
+font1 = pygame.font.Font('fonts/pixel.ttf', 50) #dafont.com
+font2 = pygame.font.Font('fonts/GothicPixels.ttf', 50)
+text_surface = font2.render('Vampire Hunter', False, 'red')
 
 class Player():
     def __init__(self, front, left, right):
@@ -22,6 +23,7 @@ class Player():
         self.x_dir = 0
         self.y_dir = 0
         self.speed = 10
+        self.health = 200
     def attack(self):
         possible_enemy = any_overlap(player,enemy_list)
         if possible_enemy != False:
@@ -32,9 +34,12 @@ class Enemy():
         self.x = x
         self.y = y
         self.image = image
+        self.health = 100
     def vanquish(self):
-        print("hit")
-        #self.x = self.x-30
+        self.x += 30
+        self.health -= 25
+        if (self.health <= 0):
+            print("vanquished")
 
 class Button():
     def __init__(self, x, y, image):
@@ -100,7 +105,8 @@ while True:
 
     window.blit(graveyard, (0,0))
     window.blit(grass, (0,70))
-    window.blit(text_surface, (250,70))
+    window.blit(text_surface, (200,70))
+    #for x in enemy_list:
     window.blit(enemy_1.image, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
 
@@ -109,7 +115,7 @@ while True:
     if enemy_1.x < 0:
         enemy_1.x = 800
 
-    if ob_overlap(player,enemy_1):
+    if any_overlap(player,enemy_list):
         print("Overlap")
 
     if player.x+player.show.get_width() < 0:
