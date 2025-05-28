@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+import random
 
 pygame.init()
 window = pygame.display.set_mode((800,500))
@@ -18,7 +19,7 @@ class Player():
         self.front = front
         self.left = left
         self.right = right
-        self.x = 0
+        self.x = 150
         self.y = 245
         self.x_dir = 0
         self.y_dir = 0
@@ -29,7 +30,9 @@ class Player():
         if possible_enemy != False:
             possible_enemy.damage()
     def damage(self):
+        print("hurt")
         self.health -= 10
+        self.x -= 45
         player_hb.remove_health()
         if (self.health <= 0):
             self.vanquish()
@@ -53,8 +56,6 @@ class Enemy():
         self.health -= 25
         if (self.health <= 0):
             self.vanquish()
-        #pygame.time.delay(1000)
-        #self.show = self.normal
     def vanquish(self):
         print("placeholder")
 
@@ -81,17 +82,18 @@ class HealthBar():
     def remove_health(self):
         self.green_width -= 10
 
-enemy_1 = Enemy(0, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
+enemy_1 = Enemy(650, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
 player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
 enemy_list = [enemy_1]
 player_hb = HealthBar("player",30,30,100,20)
 
-def ob_overlap(ob1, ob2):
+def ob_overlap(ob1, ob2): #dif. overlap standards for enemy- still working on
     ob1_x1 = ob1.x
     ob1_x2 = ob1.x + ob1.show.get_width()
     ob2_x1 = ob2.x
     ob2_x2 = ob2.x + ob2.show.get_width()
-    if (ob1_x1 <= ob2_x1 and ob1_x2 >= ob2_x1) or (ob2_x1 <= ob1_x1 and ob2_x2 >= ob1_x2):
+    ob1_line = (ob1_x2-ob1_x1)/2 + (ob1_x2-ob1_x1)/4
+    if (ob1_x1 <= ob2_x1 and ob1_line >= ob2_x1) or (ob2_x1 <= ob1_x1 and ob2_x2 >= ob1_line):
         return True
     else:
         return False
@@ -141,6 +143,7 @@ while True:
     #for x in enemy_list:
     window.blit(enemy_1.show, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
+    enemy_1.attack()
     player_hb.draw()
 
     player.x += player.speed*player.x_dir
