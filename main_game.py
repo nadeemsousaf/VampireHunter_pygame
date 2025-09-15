@@ -6,12 +6,23 @@ pygame.init()
 window = pygame.display.set_mode((800,500))
 pygame.display.set_caption('Vampire Hunter')
 clock = pygame.time.Clock()
+sprite_pause = False
+
+BLACK = ( 0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = ( 255, 0, 0)
 
 graveyard = pygame.image.load('images/graveyard6.jpg')
 grass = pygame.image.load('images/grass.png')
+re_button_BN = pygame.transform.scale(pygame.image.load('images/restartBN.jpg'), (100,50))
+re_button_BA = pygame.transform.scale(pygame.image.load('images/restartBA.jpg'), (100,50))
+q_button_BN = pygame.transform.scale(pygame.image.load('images/quitBN.jpg'), (100,50))
+q_button_BA = pygame.transform.scale(pygame.image.load('images/quitBA.jpg'), (100,50))
 font1 = pygame.font.Font('fonts/pixel.ttf', 50) #dafont.com
 font2 = pygame.font.Font('fonts/GothicPixels.ttf', 50)
-text_surface = font2.render('Vampire Hunter', False, 'red')
+text_surface = font2.render('Vampire Hunter', False, RED)
+
 
 class Player():
     def __init__(self, front, left, right):
@@ -37,7 +48,11 @@ class Player():
         if (self.health <= 0):
             self.vanquish()
     def vanquish(self):
-        print("placeholder")
+        vanquish_text = font1.render("You Died",False,RED)
+        window.blit(vanquish_text, (40, 250))
+        global sprite_pause 
+        sprite_pause = True
+        create_buttons()
 
 class Enemy():
     def __init__(self, x, y, normal, hurt):
@@ -56,17 +71,34 @@ class Enemy():
         self.health -= 25
         if (self.health <= 0):
             self.vanquish()
-    def vanquish(self):
-        print("placeholder")
+    def vanquish(self): #reuse enemy?- reset currently
+        self.x = 800
+        self.health = 100
 
 class Button():
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, normal_img, hover_img):
         self.x = x
         self.y = y
-        self.image = image
+        self.show_image = normal_img
+        self.normal_img = normal_img
+        self.hover_img = hover_img
     def draw(self):
-        window.blit(self.image, (self.x, self.y))
-        pos = pygame.mouse.get_pos
+        window.blit(self.show_image, (self.x, self.y))
+    def update(self,event):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos): #mouse hovering
+            self.show_img = self.hover_img
+            if event.type == pygame.MOUSEBUTTONDOWN: #button clicked
+                self.show_img = self.normal_img #sleep to show clicked button?
+                #print("click")
+                if self.action != None:
+                    if self.action_var != None:
+                        return self.action(self.action_var) #value needs to be passed in to the function in form of a list
+                    else:
+                        self.action() #no values into function
+        else:
+           self.show_img = self.normal_img 
+           return None
 
 class HealthBar():
     def __init__(self,name,x,y,width,height):
@@ -82,7 +114,7 @@ class HealthBar():
     def remove_health(self):
         self.green_width -= 10
 
-enemy_1 = Enemy(650, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
+enemy_1 = Enemy(800, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
 player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
 enemy_list = [enemy_1]
 player_hb = HealthBar("player",30,30,100,20)
@@ -107,6 +139,12 @@ def any_overlap(person, list):
         if (person_x1 <= enemy_x1 and person_x2 >= enemy_x1) or (enemy_x1 <= person_x1 and enemy_x2 >= person_x2):
             return x
     return False
+
+def create_buttons():
+    restart_button = Button(100,125,re_button_BN,re_button_BA)
+    end_game_button = Button(100,195,q_button_BN,q_button_BA)
+    restart_button.draw()
+    end_game_button.draw()
 
 while True:
     for event in pygame.event.get():
@@ -146,23 +184,24 @@ while True:
     enemy_1.attack()
     player_hb.draw()
 
-    player.x += player.speed*player.x_dir
-    enemy_1.x -= 4
-    if enemy_1.x < 0:
-        enemy_1.x = 800
+    if sprite_pause == False: #test
+        player.x += player.speed*player.x_dir
+        enemy_1.x -= 4
+        if enemy_1.x < 0:
+            enemy_1.x = 800
 
-    if any_overlap(player,enemy_list):
-        print("Overlap")
+        if any_overlap(player,enemy_list):
+            print("Overlap")
 
-    if player.x+player.show.get_width() < 0:
-        player.x = 0+player.show.get_width()
-    
-    if player.x > 800:
-        player.x = 800-player.show.get_width()
+        if player.x+player.show.get_width() < 0:
+            player.x = 0+player.show.get_width()
+        
+        if player.x > 800:
+            player.x = 800-player.show.get_width()
 
-    for x in enemy_list:
-        if (ob_overlap(player,x)==False):
-            x.show = x.normal
+        for x in enemy_list:
+            if (ob_overlap(player,x)==False):
+                x.show = x.normal
 
     pygame.display.update()
     clock.tick(40)
