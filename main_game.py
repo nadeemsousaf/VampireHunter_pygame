@@ -19,7 +19,6 @@ font1 = pygame.font.Font('fonts/pixel.ttf', 50) #dafont.com
 font2 = pygame.font.Font('fonts/GothicPixels.ttf', 50)
 text_surface = font2.render('Vampire Hunter', False, RED)
 
-
 class Player():
     def __init__(self, front, left, right):
         self.show = front
@@ -45,7 +44,7 @@ class Player():
             self.vanquish()
     def vanquish(self):
         vanquish_text = font1.render("You Died",False,RED)
-        window.blit(vanquish_text, (100, 180))
+        window.blit(vanquish_text, (100, 160))
         global sprite_pause 
         sprite_pause = True
 
@@ -74,23 +73,23 @@ class Button(): #enable hover capabilities
     def __init__(self, x, y, normal_img, hover_img):
         self.x = x
         self.y = y
-        self.show_image = normal_img
+        self.show = normal_img
         self.normal_img = normal_img
         self.hover_img = hover_img
         self.rect = pygame.Rect(x,y,normal_img.get_width(),normal_img.get_height())
         self.action = None
     def draw(self):
-        window.blit(self.show_image, (self.x, self.y))
+        window.blit(self.show, (self.x, self.y))
     def set_click_response(self,action,action_var):
         self.action = action #a function
         self.action_var = action_var
     def update(self,event):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos): #mouse hovering
-            self.show_img = self.hover_img
+            self.show = self.hover_img
             #print("hover")
             if event.type == pygame.MOUSEBUTTONDOWN: #button clicked
-                self.show_img = self.normal_img #sleep to show clicked button?
+                self.show = self.normal_img #sleep to show clicked button?
                 #print("click")
                 if self.action != None:
                     if self.action_var != None:
@@ -98,7 +97,7 @@ class Button(): #enable hover capabilities
                     else:
                         self.action() #no values into function
         else:
-           self.show_img = self.normal_img 
+           self.show = self.normal_img 
            return None
 
 class HealthBar():
