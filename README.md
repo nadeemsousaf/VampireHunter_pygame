@@ -7,4 +7,4 @@ This program is an interactive, single-player, combat game, designed in 2 dimens
 To run the program, type "python main_game.py" into the terminal, upon entering this command an window will appear on screen. To play the game, use the keyboard keys as directed in the "Program Description" above.
 
 -Citations-
-None to date.
+dafont.com for the fonts used
