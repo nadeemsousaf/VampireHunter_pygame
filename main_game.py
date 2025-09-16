@@ -47,7 +47,7 @@ class Player():
         window.blit(vanquish_text, (100, 160))
         global sprite_pause 
         sprite_pause = True
-    def reset(self): #placeholder for better pratice
+    def reset(self): #placeholder for better practice
         self.x = 150
         self.y = 245
         self.x_dir = 0
