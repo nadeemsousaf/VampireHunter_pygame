@@ -47,6 +47,14 @@ class Player():
         window.blit(vanquish_text, (100, 160))
         global sprite_pause 
         sprite_pause = True
+    def reset(self): #placeholder for better pratice
+        self.x = 150
+        self.y = 245
+        self.x_dir = 0
+        self.y_dir = 0
+        self.speed = 10
+        self.health = 200
+        player_hb.reset()
 
 class Enemy():
     def __init__(self, x, y, normal, hurt):
@@ -68,6 +76,10 @@ class Enemy():
     def vanquish(self): #reuse enemy?- reset currently
         self.x = 800
         self.health = 100
+    def reset(self):
+        self.x = 800
+        self.y = 240
+        self.health = 100
 
 class Button(): #enable hover capabilities
     def __init__(self, x, y, normal_img, hover_img):
@@ -80,9 +92,8 @@ class Button(): #enable hover capabilities
         self.action = None
     def draw(self):
         window.blit(self.show, (self.x, self.y))
-    def set_click_response(self,action,action_var):
+    def set_click_response(self,action):
         self.action = action #a function
-        self.action_var = action_var
     def update(self,event):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos): #mouse hovering
@@ -92,10 +103,7 @@ class Button(): #enable hover capabilities
                 self.show = self.normal_img #sleep to show clicked button?
                 #print("click")
                 if self.action != None:
-                    if self.action_var != None:
-                        return self.action(self.action_var) #value needs to be passed in to the function in form of a list
-                    else:
-                        self.action() #no values into function
+                    self.action() #no values into function
         else:
            self.show = self.normal_img 
            return None
@@ -113,12 +121,16 @@ class HealthBar():
         pygame.draw.rect(window, (0,128,0), pygame.Rect(self.x,self.y,self.green_width,self.height))
     def remove_health(self):
         self.green_width -= 10
+    def reset(self):
+        self.green_width = 100
 
 enemy_1 = Enemy(800, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
 player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
 enemy_list = [enemy_1]
 player_hb = HealthBar("player",30,30,100,20)
 buttons = {"restart_button":Button(285,150,pygame.transform.scale(pygame.image.load('images/restartBN.jpg'), (100,50)),pygame.transform.scale(pygame.image.load('images/restartBA.jpg'), (100,50))),"quit_button":Button(405,150,pygame.transform.scale(pygame.image.load('images/quitBN.jpg'), (100,50)),pygame.transform.scale(pygame.image.load('images/quitBA.jpg'), (100,50)))}
+buttons["restart_button"].set_click_response(lambda : restart_game())
+buttons["quit_button"].set_click_response(lambda: quit_game())
 
 def ob_overlap(ob1, ob2): #dif. overlap standards for enemy- still working on
     ob1_x1 = ob1.x
@@ -145,11 +157,20 @@ def draw_buttons():
     for button in buttons:
         buttons[button].draw()
 
+def quit_game():
+    pygame.quit()
+    exit()
+
+def restart_game():
+    global sprite_pause
+    sprite_pause = False
+    player.reset()
+    enemy_1.reset()
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+            quit_game()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 player.y_dir = 1
