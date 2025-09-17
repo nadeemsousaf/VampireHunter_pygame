@@ -11,3 +11,4 @@ dafont.com for the fonts used
 
 -NTS-
 restructure files for proper inheritance and updating sprites
+create levels/tiers of game to change bg and enemy - new art needed

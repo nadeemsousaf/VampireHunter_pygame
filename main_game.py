@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-#import random
+#import random #use for gen. of same class enemy characters- must change enemy handling for this
 
 pygame.init()
 window = pygame.display.set_mode((800,500))
