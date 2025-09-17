@@ -17,6 +17,7 @@ graveyard = pygame.image.load('images/graveyard6.jpg')
 grass = pygame.image.load('images/grass.png')
 font1 = pygame.font.Font('fonts/pixel.ttf', 50) #dafont.com
 font2 = pygame.font.Font('fonts/GothicPixels.ttf', 50)
+font3 = pygame.font.Font('fonts/pixel.ttf', 20)
 text_surface = font2.render('Vampire Hunter', False, RED)
 
 class Player():
@@ -39,7 +40,7 @@ class Player():
         #print("hurt")
         self.health -= 10
         self.x -= 45
-        player_hb.remove_health()
+        player_hb.remove_health(10)
         if (self.health <= 0):
             self.vanquish()
     def vanquish(self):
@@ -67,21 +68,25 @@ class Enemy():
     def attack(self):
         if (ob_overlap(player,self)):
             player.damage()
+    def get_xy(self):
+        return (self.x,self.y)
     def damage(self):
         self.show = self.hurt
         self.x += 45
         self.health -= 25
+        enemy_hb.remove_health(25)
         if (self.health <= 0):
             self.vanquish()
     def vanquish(self): #reuse enemy?- reset currently
         self.x = 800
         self.health = 100
+        enemy_hb.restore()
     def reset(self):
         self.x = 800
         self.y = 240
         self.health = 100
 
-class Button(): #enable hover capabilities
+class Button():
     def __init__(self, x, y, normal_img, hover_img):
         self.x = x
         self.y = y
@@ -119,15 +124,27 @@ class HealthBar():
     def draw(self):
         pygame.draw.rect(window, (255,0,0), pygame.Rect(self.x,self.y,self.red_width,self.height))
         pygame.draw.rect(window, (0,128,0), pygame.Rect(self.x,self.y,self.green_width,self.height))
-    def remove_health(self):
-        self.green_width -= 10
+        self.create_label()
+    def remove_health(self,by):
+        self.green_width -= by
     def reset(self):
         self.green_width = 100
+    def create_label(self):
+        label_text = font3.render(self.name,False,RED)
+        window.blit(label_text, (self.x, self.y-20)) #change to be an equation that uses height, width and font size
+    def change_coord(self,x,y):
+        if x != False:
+            self.x = x
+        if y != False:
+            self.y = y
+    def restore(self):
+        self.green_width = self.red_width
 
 enemy_1 = Enemy(800, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
 player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
 enemy_list = [enemy_1]
 player_hb = HealthBar("player",30,30,100,20)
+enemy_hb = HealthBar("enemy",enemy_1.get_xy()[0],enemy_1.get_xy()[1]-10,100,10)
 buttons = {"restart_button":Button(285,150,pygame.transform.scale(pygame.image.load('images/restartBN.jpg'), (100,50)),pygame.transform.scale(pygame.image.load('images/restartBA.jpg'), (100,50))),"quit_button":Button(405,150,pygame.transform.scale(pygame.image.load('images/quitBN.jpg'), (100,50)),pygame.transform.scale(pygame.image.load('images/quitBA.jpg'), (100,50)))}
 buttons["restart_button"].set_click_response(lambda : restart_game())
 buttons["quit_button"].set_click_response(lambda: quit_game())
@@ -204,7 +221,10 @@ while True:
     window.blit(enemy_1.show, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
     enemy_1.attack()
-    player_hb.draw()
+
+    player_hb.draw() #fix ownership here- classes to own their healthbars
+    enemy_hb.draw()
+    enemy_hb.change_coord(enemy_1.get_xy()[0],False)
 
     if sprite_pause == False: #test
         player.x += player.speed*player.x_dir
