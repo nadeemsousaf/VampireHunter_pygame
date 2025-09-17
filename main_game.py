@@ -23,11 +23,14 @@ text_surface = font2.render('Vampire Hunter', False, RED)
 enemy_kill_count = 0
 
 class Player():
-    def __init__(self, front, left, right):
+    def __init__(self, front, left, right, hurt_f, hurt_l, hurt_r):
         self.show = front
         self.front = front
         self.left = left
         self.right = right
+        self.hurt_f = hurt_f
+        self.hurt_l = hurt_l
+        self.hurt_r = hurt_r
         self.x = 150
         self.y = 245
         self.x_dir = 0
@@ -44,6 +47,14 @@ class Player():
         self.health -= 10
         self.x -= 45
         player_hb.remove_health(10)
+
+        if self.show == self.front:
+            self.show = self.hurt_f
+        elif self.show == self.left:
+            self.show = self.hurt_l
+        else:
+            self.show = self.hurt_r
+        
         if (self.health <= 0):
             self.vanquish()
     def vanquish(self):
@@ -58,6 +69,7 @@ class Player():
         self.y_dir = 0
         self.speed = 10
         self.health = 200
+        self.show = self.front
         player_hb.reset()
 
 class Enemy():
@@ -90,6 +102,7 @@ class Enemy():
         self.x = 800
         self.y = 240
         self.health = 100
+        enemy_hb.restore()
 
 class Button():
     def __init__(self, x, y, normal_img, hover_img):
@@ -146,7 +159,7 @@ class HealthBar():
         self.green_width = self.red_width
 
 enemy_1 = Enemy(800, 240, pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png'))
-player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'))
+player = Player(pygame.image.load('images/player1.png'), pygame.image.load('images/player3.png'), pygame.image.load('images/player2.png'),pygame.image.load('images/player1_red.png'), pygame.image.load('images/player3_red.png'), pygame.image.load('images/player2_red.png'))
 enemy_list = [enemy_1]
 player_hb = HealthBar("player",30,30,100,20)
 enemy_hb = HealthBar("enemy",enemy_1.get_xy()[0],enemy_1.get_xy()[1]-10,100,10)
