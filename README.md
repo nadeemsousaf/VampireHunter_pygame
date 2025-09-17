@@ -8,3 +8,6 @@ To run the program, type "python main_game.py" into the terminal, upon entering 
 
 -Citations-
 dafont.com for the fonts used
+
+-NTS-
+restructure files for proper inheritance and updating sprites

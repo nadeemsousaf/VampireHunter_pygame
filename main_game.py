@@ -20,6 +20,8 @@ font2 = pygame.font.Font('fonts/GothicPixels.ttf', 50)
 font3 = pygame.font.Font('fonts/pixel.ttf', 20)
 text_surface = font2.render('Vampire Hunter', False, RED)
 
+enemy_kill_count = 0
+
 class Player():
     def __init__(self, front, left, right):
         self.show = front
@@ -32,6 +34,7 @@ class Player():
         self.y_dir = 0
         self.speed = 10
         self.health = 200
+
     def attack(self):
         possible_enemy = any_overlap(player,enemy_list)
         if possible_enemy != False:
@@ -78,6 +81,8 @@ class Enemy():
         if (self.health <= 0):
             self.vanquish()
     def vanquish(self): #reuse enemy?- reset currently
+        global enemy_kill_count
+        enemy_kill_count += 1
         self.x = 800
         self.health = 100
         enemy_hb.restore()
@@ -221,6 +226,9 @@ while True:
     window.blit(enemy_1.show, (enemy_1.x,enemy_1.y))
     window.blit(player.show, (player.x,player.y))
     enemy_1.attack()
+
+    enemy_kill_text = font3.render(f'enemy kill count: {enemy_kill_count}',False,RED)
+    window.blit(enemy_kill_text, (640, 20))
 
     player_hb.draw() #fix ownership here- classes to own their healthbars
     enemy_hb.draw()
